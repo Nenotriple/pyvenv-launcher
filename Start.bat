@@ -9,13 +9,14 @@ set "SCRIPT_VERSION=1.02"
 REM ======================================================
 
 
-REM Configuration (see README.md for details)
+REM Configuration (see https://github.com/Nenotriple/pyvenv-launcher/blob/main/README.md for details)
 set "PYTHON_SCRIPT=app.py"
 set "REQUIREMENTS_FILE=requirements.txt"
 
 set "FAST_START=FALSE"
 set "AUTO_FAST_START=TRUE"
 set "AUTO_CLOSE_CONSOLE=TRUE"
+set "UPDATE_REQUIREMENTS_ON_LAUNCH=FALSE"
 
 set "ENABLE_COLORS=TRUE"
 set "QUIET_MODE=FALSE"
@@ -80,7 +81,7 @@ REM ==============================================
     REM Fast start path
     if "%FAST_START%"=="TRUE" (
         call :ActivateVenv && (
-            call :CheckRequirementsUpdate
+            if "%UPDATE_REQUIREMENTS_ON_LAUNCH%"=="TRUE" call :InstallRequirements
             exit /b 0
         )
         REM If activation fails, fall through to full setup
@@ -111,17 +112,6 @@ exit /b 0
     call "%VENV_DIR%\Scripts\activate.bat" || (call :LogError "Failed to activate virtual environment" & exit /b 1)
     where python | findstr "%VENV_DIR%" >nul || (call :LogError "Virtual environment activation failed" & exit /b 1)
     call :LogOK "Virtual environment activated"
-exit /b 0
-
-
-:CheckRequirementsUpdate
-    if not exist "%REQUIREMENTS_FILE%" exit /b 0
-    REM Compare file timestamps
-    for /f %%i in ('dir /b /od "%REQUIREMENTS_FILE%" "%VENV_DIR%\Scripts\python.exe" 2^>nul') do set "NEWEST=%%i"
-    if /i "!NEWEST!"=="%REQUIREMENTS_FILE%" (
-        call :LogInfo "Requirements file is newer - updating packages"
-        call :InstallRequirements
-    )
 exit /b 0
 
 
@@ -226,4 +216,9 @@ exit /b 0
 
 :SetVenvHidden
     attrib +h "%VENV_DIR%" 2>nul && call :LogInfo "Virtual environment directory set as hidden" || call :LogWarn "Failed to set directory as hidden"
+exit /b 0
+    if "%AUTO_CLOSE_CONSOLE%"=="TRUE" (
+        echo Press any key to exit...
+        pause >nul
+    )
 exit /b 0
