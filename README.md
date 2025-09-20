@@ -3,40 +3,39 @@
 A robust Windows batch script that creates, activates, and manages a Python virtual environment
 for your project, installs dependencies, and launches your Python application.
 
-## Highlights
+## Features
 
-* Automatic venv creation and activation
-* Smart Fast Start to skip full setup when a valid venv exists
-* Optional requirements installation/update
-* Colored, readable logs
-* Option to hide the venv directory
-* Interactive shell mode (when LAUNCH_SCRIPT=FALSE)
-* Safe error handling and clear messaging
+- Automatic venv creation and activation
+- Fast Start to skip full setup when a valid venv exists
+- Optional requirements installation/update
+- Colored, readable logs
+- Option to hide the venv directory
+- Interactive shell mode (`LAUNCH_SCRIPT=FALSE`)
+- Safe error handling and clear messaging
+- Automatic project name detection and terminal window title
+- Quiet mode for less verbose pip output
+- Configurable pip timeout
 
-## Quick Start
+## Prerequisites
+
+- Windows (cmd.exe)
+- Python available in `PATH` (the script uses `python -m venv`)
+
+## Quick start
 
 1. Put `Start.bat` in your project root.
 2. Optionally create `requirements.txt` and your app script (default: `app.py`).
-3. Double-click `Start.bat` (or run it from a terminal).
+3. Double‑click `Start.bat` (or run it from a terminal).
 
-> **Note:**
+> Note:
 >
-> * `Start.bat` always operates from its own directory (`pushd %~dp0`).
-> * The venv is created using `python -m venv` with the Python found in `PATH`.
+> - `Start.bat` always operates from its own directory (`pushd %~dp0`).
+> - The venv is created using the Python found in `PATH`.
+> - The script detects your project name from the folder containing `Start.bat`
+>   and sets the terminal window title accordingly. The detected name is also
+>   printed in the console header.
 
-## Usage Scenarios
-
-* **First run in a new repo:**
-  * The script creates the venv, upgrades pip, installs requirements, and runs your script.
-
-* **Subsequent runs with no changes:**
-  * With `AUTO_FAST_START=TRUE` (default), it activates the existing venv and runs quickly.
-  * Set `UPDATE_REQUIREMENTS_ON_LAUNCH=TRUE` if you want fast start to also check and install requirements each time.
-
-* **Interactive shell only:**
-  * Set `LAUNCH_SCRIPT=FALSE` to prepare the venv and drop into an activated interactive shell.
-
-**Example structure:**
+### Example structure
 
 ```plaintext
 your-project/
@@ -48,24 +47,36 @@ your-project/
 
 ## Configuration
 
-| Variable                        | Default            | Description                                            |
-| ------------------------------- | ------------------ | ------------------------------------------------------ |
-| `PYTHON_SCRIPT`                 | `app.py`           | Script to run after setup.                             |
-| `REQUIREMENTS_FILE`             | `requirements.txt` | Requirements file to install from.                     |
-| `VENV_DIR`                      | `.venv`            | Virtual environment directory name.                    |
-| `FAST_START`                    | `FALSE`            | Forces fast start mode if venv is valid.               |
-| `AUTO_FAST_START`               | `TRUE`             | Auto-enables fast start when venv exists and responds. |
-| `UPDATE_REQUIREMENTS_ON_LAUNCH` | `FALSE`            | When in fast start, also update requirements.          |
-| `AUTO_CLOSE_CONSOLE`            | `TRUE`             | After script completion, close the console.            |
-| `LAUNCH_SCRIPT`                 | `TRUE`             | If `TRUE`, launch the Python script after setup; if `FALSE`, open an interactive shell. |
-| `SET_VENV_HIDDEN`               | `TRUE`             | Sets venv directory attribute to Hidden.               |
-| `ENABLE_COLORS`                 | `TRUE`             | Enables ANSI colors for log messages.                  |
-| `QUIET_MODE`                    | `FALSE`            | Reduces pip output verbosity.                          |
-| `PIP_TIMEOUT`                   | `30`               | Timeout for pip operations.                            |
+Set variables at the top of `Start.bat` to control behavior.
 
----
+| Variable                        | Default            | Description                                                            |
+| ------------------------------- | ------------------ | ---------------------------------------------------------------------- |
+| `PYTHON_SCRIPT`                 | `app.py`           | Script to run after setup.                                             |
+| `REQUIREMENTS_FILE`             | `requirements.txt` | Requirements file to install from.                                     |
+| `VENV_DIR`                      | `.venv`            | Virtual environment directory name.                                    |
+| `FAST_START`                    | `FALSE`            | Forces Fast Start if venv is valid.                                    |
+| `AUTO_FAST_START`               | `TRUE`             | Auto‑enables Fast Start when venv exists and responds.                 |
+| `UPDATE_REQUIREMENTS_ON_LAUNCH` | `FALSE`            | When in Fast Start, also update requirements.                          |
+| `AUTO_CLOSE_CONSOLE`            | `TRUE`             | After script completion, close the console.                            |
+| `LAUNCH_SCRIPT`                 | `TRUE`             | If `TRUE`, run the Python script; if `FALSE`, open an activated shell. |
+| `SET_VENV_HIDDEN`               | `TRUE`             | Sets venv directory attribute to Hidden.                               |
+| `ENABLE_COLORS`                 | `TRUE`             | Enables ANSI colors for log messages.                                  |
+| `QUIET_MODE`                    | `FALSE`            | Reduces pip output verbosity.                                          |
+| `PIP_TIMEOUT`                   | `30`               | Timeout (seconds) for pip operations.                                  |
 
-## How It Works
+## Common usage
+
+- First run in a new repository:
+  - Creates the venv, upgrades pip, installs requirements, then runs your script.
+
+- Subsequent runs (no changes):
+  - With `AUTO_FAST_START=TRUE` (default), activates the existing venv and runs quickly.
+  - Set `UPDATE_REQUIREMENTS_ON_LAUNCH=TRUE` to also check and install requirements in Fast Start.
+
+- Interactive shell only:
+  - Set `LAUNCH_SCRIPT=FALSE` to prepare the venv and drop into an activated shell.
+
+## How it works
 
 The flowchart below shows the main execution path.
 
@@ -160,3 +171,27 @@ flowchart TD
     ac2 -- Yes --> close[Close console]:::success --> e1
     ac2 -- No --> keep2[Keep console open]:::proc --> e1
 ```
+
+## Project name detection and terminal title
+
+- The script determines your project name from the parent directory of `Start.bat`
+  (e.g., `C:\Repos\myproject\Start.bat` → `myproject`).
+- The detected project name is printed in the console header, visually distinct from the launcher header.
+- The terminal window title is automatically set to the project name.
+
+## Troubleshooting
+
+- Python not found:
+  - Ensure Python is installed and available in `PATH`. See [https://python.org](https://python.org).
+
+- Activation failed:
+  - Delete `.venv` and re‑run `Start.bat` to recreate the environment.
+
+- Requirements not installed:
+  - Confirm `requirements.txt` exists next to `Start.bat`, or update `REQUIREMENTS_FILE`.
+
+- Slow installs or timeouts:
+  - Increase `PIP_TIMEOUT`, or set `QUIET_MODE=FALSE` to see more details.
+
+- Reset everything:
+  - Close terminals using the venv, delete `.venv`, then run `Start.bat` again.
