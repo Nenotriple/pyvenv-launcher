@@ -11,6 +11,7 @@ for your project, installs dependencies, and launches your Python application.
 - Colored, readable logs
 - Option to hide the venv directory
 - Interactive shell mode (`LAUNCH_SCRIPT=FALSE`)
+- Manual interpreter override via `PYTHON_OVERRIDE`
 - Safe error handling and clear messaging
 - Automatic project name detection and terminal window title
 - Quiet mode for less verbose pip output
@@ -19,7 +20,7 @@ for your project, installs dependencies, and launches your Python application.
 ## Prerequisites
 
 - Windows (cmd.exe)
-- Python available in `PATH` (the script uses `python -m venv`)
+- Python 3 installed (exposed via `python` on `PATH` **or** the Windows `py` launcher)
 
 ## Quick start
 
@@ -30,7 +31,9 @@ for your project, installs dependencies, and launches your Python application.
 > Note:
 >
 > - `Start.bat` always operates from its own directory (`pushd %~dp0`).
-> - The venv is created using the Python found in `PATH`.
+> - The launcher prefers the Windows `py` command (e.g., `py -3`) when available and
+>   falls back to `python` on `PATH`.
+> - Set `PYTHON_OVERRIDE` to force a specific interpreter (useful when multiple Python installs exist).
 > - The script detects your project name from the folder containing `Start.bat`
 >   and sets the terminal window title accordingly. The detected name is also
 >   printed in the console header.
@@ -52,6 +55,7 @@ Set variables at the top of `Start.bat` to control behavior.
 | Variable                        | Default            | Description                                                            |
 | ------------------------------- | ------------------ | ---------------------------------------------------------------------- |
 | `PYTHON_SCRIPT`                 | `app.py`           | Script to run after setup.                                             |
+| `PYTHON_OVERRIDE`               | *(empty)*          | Absolute path to the Python interpreter. Skips auto-detection if set.  |
 | `REQUIREMENTS_FILE`             | `requirements.txt` | Requirements file to install from.                                     |
 | `VENV_DIR`                      | `.venv`            | Virtual environment directory name.                                    |
 | `FAST_START`                    | `FALSE`            | Forces Fast Start if venv is valid.                                    |
@@ -182,7 +186,9 @@ flowchart TD
 ## Troubleshooting
 
 - Python not found:
-  - Ensure Python is installed and available in `PATH`. See [https://python.org](https://python.org).
+  - Install Python 3 or enable the Windows `py` launcher. See [https://python.org](https://python.org).
+  - If you installed Python via the Microsoft Store, ensure the `py` launcher component is included.
+  - When using `PYTHON_OVERRIDE`, verify the path points to a valid Python 3 executable.
 
 - Activation failed:
   - Delete `.venv` and re‑run `Start.bat` to recreate the environment.
