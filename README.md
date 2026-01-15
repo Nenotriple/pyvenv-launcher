@@ -19,7 +19,7 @@ for your project, installs dependencies, and launches your Python application.
 ## Prerequisites
 
 - Windows (cmd.exe)
-- Python available in `PATH` (the script uses `python -m venv`)
+- Python launcher (`py`) available in `PATH`, or set `PYTHON_PATH` to a specific `python.exe`
 
 ## Quick start
 
@@ -30,7 +30,7 @@ for your project, installs dependencies, and launches your Python application.
 > Note:
 >
 > - `Start.bat` always operates from its own directory (`pushd %~dp0`).
-> - The venv is created using the Python found in `PATH`.
+> - If `PYTHON_PATH` is set, that interpreter is used. Otherwise, the script uses the `py` launcher and prompts for a version.
 > - The script detects your project name from the folder containing `Start.bat`
 >   and sets the terminal window title accordingly. The detected name is also
 >   printed in the console header.
@@ -51,6 +51,7 @@ Set variables at the top of `Start.bat` to control behavior.
 
 | Variable                        | Default            | Description                                                            |
 | ------------------------------- | ------------------ | ---------------------------------------------------------------------- |
+| `PYTHON_PATH`                   | *(empty)*          | Full path to a specific `python.exe` to use.                           |
 | `PYTHON_SCRIPT`                 | `app.py`           | Script to run after setup.                                             |
 | `REQUIREMENTS_FILE`             | `requirements.txt` | Requirements file to install from.                                     |
 | `VENV_DIR`                      | `.venv`            | Virtual environment directory name.                                    |
@@ -70,13 +71,18 @@ Set variables at the top of `Start.bat` to control behavior.
   - Creates the venv, upgrades pip, installs requirements, then runs your script.
 
 - Subsequent runs (no changes):
-  - With `AUTO_FAST_START=TRUE` (default), activates the existing venv and runs quickly.
-  - Set `UPDATE_REQUIREMENTS_ON_LAUNCH=TRUE` to also check and install requirements in Fast Start.
+  - If a valid venv exists, the script activates it and launches the app immediately.
+  - Use `UPDATE_REQUIREMENTS_ON_LAUNCH=TRUE` to also check and install requirements during Fast Start.
 
 - Interactive shell only:
   - Set `LAUNCH_SCRIPT=FALSE` to prepare the venv and drop into an activated shell.
 
 ## How it works
+
+### Python selection
+
+- If `PYTHON_PATH` is set and exists, the script uses it directly.
+- Otherwise it queries `py list`, prompts you to pick a version, and resolves the selected interpreter.
 
 The flowchart below shows the main execution path.
 
