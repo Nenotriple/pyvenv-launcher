@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 REM ======================================================
 REM Python Virtual Environment Setup and Script Launcher
 REM Created by: github.com/Nenotriple
-set "SCRIPT_VERSION=1.05"
+set "SCRIPT_VERSION=1.06"
 REM ======================================================
 
 
